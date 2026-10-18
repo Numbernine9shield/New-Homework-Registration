@@ -1,0 +1,17 @@
+{
+  "name": "new-homework",
+  "version": "1.0.0",
+  "description": "HomeWorks Registration Page",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vite": "^8.3.4"
+  }
+}

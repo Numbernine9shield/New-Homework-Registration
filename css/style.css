@@ -66,6 +66,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    .label-text {
+        position: absolute;
+        top: 7px;
+        left: 1px;
+        color: #C6C6C8;
+        font-size: 16px;
+    }
 }
 
 .form-reg__input {
@@ -86,14 +93,6 @@ body {
     height: 60px;
     position: relative;
     box-sizing: border-box;
-}
-
-.form-reg__form span {
-    position: absolute;
-    top: 7px;
-    left: 1px;
-    color: #C6C6C8;
-    font-size: 16px;
 }
 
 .button {
@@ -165,5 +164,38 @@ body {
 
 .main-background {
     background-color: rgba(0,0,0,0.7);
+}
+
+.error-text {
+    display: none;
+    position: absolute;
+    top: 66px;
+    left: 1px;
+    color: #DD3142;
+    font-size: 16px;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.margins {
+    margin-bottom: 35px;
+}
+
+.label-privacy {
+    position: relative;
+}
+
+.label-privacy .error-text {
+    top: 30px;
+}
+
+.inputErrorBorder {
+    border: 1px solid red
 }
 

@@ -1,115 +1,145 @@
-window.addEventListener('load', () => {
-    const input = document.getElementById('fullName');
+import {regFullName, regUsername, regEmail, regPassword} from './constants.js';
+import {resetFieldError, showError, findUser} from './validation.js';
+import {mainButton, fullName, username, email, password, passwordRepeat, checkbox, popupMain, popupMainClose, mainHeadline, mainLink, mainText} from './elements.js';
 
-    input.addEventListener("keydown", (event) => {
-        if (/[0-9]/.test(event.key)) {
-            event.preventDefault();
+
+const formInputs = [fullName, username, email, password, passwordRepeat, checkbox];
+
+export const clients = JSON.parse(localStorage.getItem('clients')) ?? [];
+
+function regFormFunc(event){
+    event.preventDefault();
+    let isValid = true;
+
+    formInputs.forEach(resetFieldError);
+    //Проверка Full Name
+    if (fullName.value.trim() === "") {
+        showError(fullName, "Заполните поле Full Name");
+        isValid = false;
+    } else if (!regFullName.test(fullName.value.trim())) {
+        showError(fullName, "Full Name может содержать только буквы и пробелы");
+        isValid = false;
+    }
+    //Проверка Username
+    if (username.value.trim() === "") {
+        showError(username, "Заполните поле Username");
+        isValid = false;
+    } else if (!regUsername.test(username.value)) {
+        showError(username, "Username может содержать только буквы, цифры, символ подчеркивания и тире");
+        isValid = false;
+    }
+    //Проверка Email
+    if (email.value.trim() === "") {
+        showError(email, "Заполните поле Email");
+        isValid = false;
+    } else if (!regEmail.test(email.value)) {
+        showError(email, "Email введён некоректно");
+        isValid = false;
+    }
+    //Проверка Password
+    if (password.value.trim() === "") {
+        showError(password, "Заполните поле Password");
+        isValid = false;
+    } else if (!regPassword.test(password.value)) {
+        showError(password, "Пароль должен содержать минимум 8 символов и иметь хотя бы одну букву в верхнем регистре, одну цифру, один спецсимвол")
+        isValid = false;
+    }
+    //Проверка Repeat Password
+    if (passwordRepeat.value.trim() === "") {
+        showError(passwordRepeat, "Заполните поле Repeat Password");
+        isValid = false;
+    } else if (password.value !== passwordRepeat.value) {
+        showError(passwordRepeat, "Пароли должны совпадать")
+        isValid = false;
+    }
+    //Проверка Checkbox
+    if (!checkbox.checked) {
+        showError(checkbox, "Поставьте галочку")
+        isValid = false;
+    }
+
+    if (isValid){
+        popupMain.style.display = 'grid';
+        const user = {
+            fullName: fullName.value,
+            username: username.value,
+            email: email.value,
+            password: password.value,
+        };
+        clients.push(user);
+        localStorage.setItem('clients', JSON.stringify(clients));
+    }
+}
+
+const loginFormFunc = function (event) {
+    let isValid = true;
+
+    resetFieldError(username);
+    resetFieldError(password);
+    event.preventDefault();
+
+    if (username.value.trim() === "") {
+        showError(username, "Заполните поле Username");
+        isValid = false;
+    } else if (!regUsername.test(username.value)) {
+        showError(username, "Username может содержать только буквы, цифры, символ подчеркивания и тире");
+        isValid = false;
+    }
+    if (password.value.trim() === "") {
+        showError(password, "Заполните поле Password");
+        isValid = false;
+    }
+
+    if (isValid) {
+        const foundUser = findUser();
+
+        if (foundUser === undefined) {
+            showError(username, "Пользователь не зарегистрирован");
+        } else if (foundUser.password !== password.value) {
+            showError(password, "Неверный пароль")
+        } else {
+            mainHeadline.textContent = `Welcome, ${foundUser.fullName}!`;
+            mainButton.textContent = "Exit";
+            username.parentElement.classList.add('hide');
+            password.parentElement.classList.add('hide');
+            mainText.classList.add('hide');
+            mainLink.classList.add('hide');
+            mainButton.removeEventListener('click', loginFormFunc);
+            mainButton.addEventListener('click', function () {
+                window.location.reload();
+            })
         }
-    })
+    }
+}
 
-    input.addEventListener('input', () => {
-        input.value = input.value.replace(/[0-9]/g,'');
-    })
+//Проверка формы
+mainButton.addEventListener('click', regFormFunc);
 
-    const username = document.getElementById('username');
-
-    username.addEventListener('keydown', (event)=> {
-        if (event.key === '.' || event.key === ',') {
-            event.preventDefault();
-        }
-    })
-
-    username.addEventListener('input', ()=>{
-        username.value = username.value.replace(/[,\.]/g,'');
-    })
-
-    const checkbox = document.getElementById('checkbox');
-
-    checkbox.addEventListener('change', (event) => {
-        event.target.checked ?  console.log('Согласен'): console.log('Не согласен');
-
-    })
-
-    const main = document.getElementsByClassName('main')[0];
-    const overlay = document.getElementById('overlay');
-    const button = document.getElementById('button');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const passwordRepeat = document.getElementById('passwordRepeat');
-
-    function signUp (event) {
+function showLoginForm(event){
+    event.preventDefault();
+    resetFieldError(username);
+    resetFieldError(password);
+    mainButton.removeEventListener('click', regFormFunc);
+    mainLink.removeEventListener('click', showLoginForm);
+    popupMain.style.display = 'none';
+    mainHeadline.textContent = 'Log in to the system';
+    checkbox.parentElement.classList.add('hide');
+    fullName.parentElement.classList.add('hide');
+    email.parentElement.classList.add('hide');
+    passwordRepeat.parentElement.classList.add('hide');
+    mainButton.textContent = "Sign in";
+    mainLink.textContent = "Registration";
+    mainLink.addEventListener('click', function (event) {
         event.preventDefault();
-        if (!input.value){
-            alert('Заполните поле Full Name')
-            return
-        }
-        if (!username.value){
-            alert('Заполните поле Username')
-            return
-        }
-        if (!email.value){
-            alert('Заполните поле E-mail')
-            return
-        }
-        if (!password.value) {
-            alert('Заполните поле Password')
-            return
-        }
-        if (!passwordRepeat.value) {
-            alert('Заполните поле Repeat Password')
-            return
-        }
-        if (password.value.length < 8){
-            alert('Пароль должен содержать не менее 8 символов.')
-            return
-        }
-
-        if (password.value !== passwordRepeat.value){
-            alert('Пароли должны совпадать')
-            return
-        }
-
-        if (!checkbox.checked){
-            alert('Согласитесь с условиями')
-            return;
-        }
-        document.querySelector('form').reset();
-        overlay.style.display='flex';
-    }
-
-    button.addEventListener('click', signUp);
-
-    const link = document.getElementById('link');
-    const login = document.getElementById('login');
-
-    [link,login].forEach(item => {
-        item.addEventListener('click', ()=>{
-            overlay.style.display='none';
-            document.getElementsByClassName('form-reg__headline')[0].innerText='Log in to the system';
-            document.getElementById('label-fullName').remove();
-            document.getElementById('label-email').remove();
-            document.getElementById('label-passwordRepeat').remove();
-            document.getElementsByClassName('label-privacy')[0].remove();
-            button.innerText = 'Sign In';
-            link.remove()
-
-            button.removeEventListener('click', signUp);
-            button.addEventListener('click', signIn);
-        })
+        window.location.reload();
     })
+    password.value = '';
+    username.value = '';
 
-    function signIn () {
-        if (!username.value){
-            alert('Заполните поле Username')
-            return;
-        }
 
-        if (!password.value) {
-            alert('Заполните поле Password');
-            return;
-        }
-        alert(`Добро пожаловать ${username.value}!`)
-    }
+    mainButton.addEventListener('click', loginFormFunc);
+}
 
-    console.log('Hello world!');
-});
+popupMainClose.addEventListener('click', showLoginForm)
+mainLink.addEventListener('click', showLoginForm)
+

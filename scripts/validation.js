@@ -1,5 +1,6 @@
-import {username} from "./elements.js";
+import {fullName, mainButton, username} from "./elements.js";
 import {clients} from "./script.js";
+import {regFullName} from "./constants.js";
 
 const resetFieldError = function (item) {
     item.classList.remove("inputErrorBorder");
@@ -18,6 +19,16 @@ const findUser = function () {
     return user;
 }
 
+const keyDownFuncReg = function (nameInput, reg) {
+    resetFieldError(nameInput);
+    if (reg.test(nameInput.value)){
+        nameInput.classList.add('trueKey');
+        nameInput.classList.remove('falseKey');
+    } else {
+        nameInput.classList.remove('trueKey');
+        nameInput.classList.add('falseKey');
+    }
+}
 
 
-export {resetFieldError, showError, findUser};
+export {resetFieldError, showError, findUser, keyDownFuncReg};

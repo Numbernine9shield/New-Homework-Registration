@@ -1,15 +1,56 @@
 import {regFullName, regUsername, regEmail, regPassword} from './constants.js';
-import {resetFieldError, showError, findUser} from './validation.js';
-import {mainButton, fullName, username, email, password, passwordRepeat, checkbox, popupMain, popupMainClose, mainHeadline, mainLink, mainText} from './elements.js';
+import {resetFieldError, showError, findUser, keyDownFuncReg} from './validation.js';
+import {mainButton, fullName, username, email, password, passwordRepeat, checkbox, popupMain, popupMainClose, mainHeadline, mainLink, mainText
+, eyePass, eyePassRepeat} from './elements.js';
 
 
 const formInputs = [fullName, username, email, password, passwordRepeat, checkbox];
 
 export const clients = JSON.parse(localStorage.getItem('clients')) ?? [];
 
+fullName.addEventListener('input',  () =>{
+    keyDownFuncReg(fullName, regFullName);
+});
+username.addEventListener('input',  () =>{
+    keyDownFuncReg(username, regUsername);
+});
+email.addEventListener('input',  () =>{
+    keyDownFuncReg(email, regEmail);
+});
+password.addEventListener('input',  () =>{
+    keyDownFuncReg(password, regPassword);
+});
+passwordRepeat.addEventListener('input',  () =>{
+    keyDownFuncReg(passwordRepeat, regPassword);
+})
+
+eyePass.addEventListener('click', () =>{
+    if (password.type === 'password'){
+        password.type = 'text';
+        eyePass.children[0].src = './assets/images/openEye.png';
+    } else {
+        password.type = 'password';
+        eyePass.children[0].src = './assets/images/closeEye.png';
+    }
+});
+
+eyePassRepeat.addEventListener('click', () =>{
+    if (passwordRepeat.type === 'password'){
+        passwordRepeat.type = 'text';
+        eyePassRepeat.children[0].src = './assets/images/openEye.png';
+    } else {
+        passwordRepeat.type = 'password';
+        eyePassRepeat.children[0].src = './assets/images/closeEye.png';
+    }
+});
+
+
+
 function regFormFunc(event){
     event.preventDefault();
     let isValid = true;
+
+    const foundUser = findUser();
 
     formInputs.forEach(resetFieldError);
     //Проверка Full Name
@@ -20,9 +61,13 @@ function regFormFunc(event){
         showError(fullName, "Full Name может содержать только буквы и пробелы");
         isValid = false;
     }
+
     //Проверка Username
     if (username.value.trim() === "") {
         showError(username, "Заполните поле Username");
+        isValid = false;
+    } else if (foundUser.username === username.value){
+        showError(username, "Данный Username уже зарегистрирован");
         isValid = false;
     } else if (!regUsername.test(username.value)) {
         showError(username, "Username может содержать только буквы, цифры, символ подчеркивания и тире");
@@ -31,6 +76,9 @@ function regFormFunc(event){
     //Проверка Email
     if (email.value.trim() === "") {
         showError(email, "Заполните поле Email");
+        isValid = false;
+    } else if (foundUser.email === email.value){
+        showError(email, "Данный Email уже зарегистрирован");
         isValid = false;
     } else if (!regEmail.test(email.value)) {
         showError(email, "Email введён некоректно");
@@ -72,11 +120,13 @@ function regFormFunc(event){
 }
 
 const loginFormFunc = function (event) {
+    event.preventDefault();
+
     let isValid = true;
 
     resetFieldError(username);
     resetFieldError(password);
-    event.preventDefault();
+
 
     if (username.value.trim() === "") {
         showError(username, "Заполните поле Username");
@@ -105,9 +155,13 @@ const loginFormFunc = function (event) {
             mainText.classList.add('hide');
             mainLink.classList.add('hide');
             mainButton.removeEventListener('click', loginFormFunc);
-            mainButton.addEventListener('click', function () {
+
+            const reloadedPage = (event) => {
+                event.preventDefault();
                 window.location.reload();
-            })
+            }
+
+            mainButton.addEventListener("click", reloadedPage);
         }
     }
 }
@@ -136,6 +190,9 @@ function showLoginForm(event){
     password.value = '';
     username.value = '';
 
+    username.classList.remove('trueKey', 'falseKey');
+    password.classList.remove('trueKey', 'falseKey');
+    eyePass.children[0].src = './assets/images/closeEye.png';
 
     mainButton.addEventListener('click', loginFormFunc);
 }

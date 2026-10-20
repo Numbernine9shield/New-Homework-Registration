@@ -10,5 +10,8 @@ const popupMainClose = document.querySelector("#login");
 const mainHeadline = document.querySelector(".form-reg__headline");
 const mainLink = document.querySelector("#link");
 const mainText = document.querySelector(".form-reg__text");
+const eyePass = document.querySelector("#eyePass");
+const eyePassRepeat = document.querySelector("#eyePassRep");
 
-export {fullName, username, email, password, passwordRepeat, checkbox, mainButton, popupMain, popupMainClose, mainHeadline, mainLink, mainText};
+export {fullName, username, email, password, passwordRepeat, checkbox, mainButton, popupMain, popupMainClose, mainHeadline, mainLink, mainText
+, eyePass, eyePassRepeat};

@@ -66,7 +66,7 @@ function regFormFunc(event){
     if (username.value.trim() === "") {
         showError(username, "Заполните поле Username");
         isValid = false;
-    } else if (foundUser.username === username.value){
+    } else if (clients.some(user => user.username === username.value)){
         showError(username, "Данный Username уже зарегистрирован");
         isValid = false;
     } else if (!regUsername.test(username.value)) {
@@ -77,7 +77,7 @@ function regFormFunc(event){
     if (email.value.trim() === "") {
         showError(email, "Заполните поле Email");
         isValid = false;
-    } else if (foundUser.email === email.value){
+    } else if (clients.some(user => user.email === email.value)){
         showError(email, "Данный Email уже зарегистрирован");
         isValid = false;
     } else if (!regEmail.test(email.value)) {
